@@ -100,8 +100,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logout = () => {
-    Cookies.remove('auth-token');
-    setUser(null);
+    fetch('/api/auth/me', { method: 'POST' })
+      .then(() => {
+        Cookies.remove('auth-token');
+        setUser(null);
+      })
+      .catch(() => {
+        // Fallback: remove cookie client-side
+        Cookies.remove('auth-token');
+        setUser(null);
+      });
   };
 
   return (

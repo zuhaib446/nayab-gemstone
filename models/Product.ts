@@ -101,4 +101,5 @@ ProductSchema.index({ name: 'text', description: 'text' });
 ProductSchema.index({ category: 1, price: 1 });
 ProductSchema.index({ featured: 1 });
 
-export default mongoose.models.Product || mongoose.model<IProduct>('Product', ProductSchema);
+const Product = mongoose.models.Product || mongoose.model<IProduct>('Product', ProductSchema);
+export default Product;

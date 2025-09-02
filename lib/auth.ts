@@ -38,8 +38,10 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
     
     if (!token) return null;
     
-    return await verifyToken(token);
+    const user = await verifyToken(token);
+    return user;
   } catch (error) {
+    console.error('getCurrentUser error:', error);
     return null;
   }
 }
