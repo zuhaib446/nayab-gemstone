@@ -101,5 +101,10 @@ ProductSchema.index({ name: 'text', description: 'text' });
 ProductSchema.index({ category: 1, price: 1 });
 ProductSchema.index({ featured: 1 });
 
-const Product = mongoose.models.Product || mongoose.model<IProduct>('Product', ProductSchema);
+// Delete the model if it exists to avoid OverwriteModelError
+if (mongoose.models.Product) {
+  delete mongoose.models.Product;
+}
+
+const Product = mongoose.model<IProduct>('Product', ProductSchema);
 export default Product;

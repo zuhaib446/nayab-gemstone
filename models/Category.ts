@@ -40,5 +40,10 @@ CategorySchema.pre('save', function (next) {
   next();
 });
 
-const Category = mongoose.models.Category || mongoose.model<ICategory>('Category', CategorySchema);
+// Delete the model if it exists to avoid OverwriteModelError
+if (mongoose.models.Category) {
+  delete mongoose.models.Category;
+}
+
+const Category = mongoose.model<ICategory>('Category', CategorySchema);
 export default Category;

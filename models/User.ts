@@ -58,5 +58,10 @@ UserSchema.methods.comparePassword = async function (candidatePassword: string):
   return bcrypt.compare(candidatePassword, this.password);
 };
 
-const User = mongoose.models.User || mongoose.model<IUser>('User', UserSchema);
+// Delete the model if it exists to avoid OverwriteModelError
+if (mongoose.models.User) {
+  delete mongoose.models.User;
+}
+
+const User = mongoose.model<IUser>('User', UserSchema);
 export default User;

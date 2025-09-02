@@ -81,5 +81,10 @@ const OrderSchema = new Schema<IOrder>({
 OrderSchema.index({ userId: 1, createdAt: -1 });
 OrderSchema.index({ status: 1 });
 
-const Order = mongoose.models.Order || mongoose.model<IOrder>('Order', OrderSchema);
+// Delete the model if it exists to avoid OverwriteModelError
+if (mongoose.models.Order) {
+  delete mongoose.models.Order;
+}
+
+const Order = mongoose.model<IOrder>('Order', OrderSchema);
 export default Order;

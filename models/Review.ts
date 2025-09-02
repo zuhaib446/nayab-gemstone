@@ -36,5 +36,10 @@ const ReviewSchema = new Schema<IReview>({
 
 ReviewSchema.index({ productId: 1, userId: 1 }, { unique: true });
 
-const Review = mongoose.models.Review || mongoose.model<IReview>('Review', ReviewSchema);
+// Delete the model if it exists to avoid OverwriteModelError
+if (mongoose.models.Review) {
+  delete mongoose.models.Review;
+}
+
+const Review = mongoose.model<IReview>('Review', ReviewSchema);
 export default Review;
