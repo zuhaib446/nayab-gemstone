@@ -45,7 +45,6 @@ export async function verifyToken(token: string): Promise<AuthUser | null> {
 export async function getCurrentUser(): Promise<AuthUser | null> {
   try {
     const cookieStore = cookies();
-    console.log("Cookie Store:", cookieStore);
 
     const token = cookieStore.get('auth-token')?.value;
     

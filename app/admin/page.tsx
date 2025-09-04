@@ -5,6 +5,7 @@ import { AdminLayout } from '@/components/admin/AdminLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Package, ShoppingCart, Users, DollarSign } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface DashboardStats {
   totalProducts: number;
@@ -29,6 +30,7 @@ export default function AdminDashboard() {
   }, []);
 
   const fetchDashboardStats = async () => {
+    setLoading(true);
     try {
       const [productsRes, ordersRes, usersRes] = await Promise.all([
         fetch('/api/products'),
@@ -55,6 +57,7 @@ export default function AdminDashboard() {
       });
     } catch (error) {
       console.error('Error fetching dashboard stats:', error);
+      toast.error('Failed to load dashboard data');
     } finally {
       setLoading(false);
     }

@@ -2,11 +2,12 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Crown, Package, ShoppingCart, Users, BarChart3, Settings } from 'lucide-react';
+import { Crown, Package, ShoppingCart, Users, BarChart3, Settings, LogOut, Home } from 'lucide-react';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -15,6 +16,7 @@ interface AdminLayoutProps {
 
 export function AdminLayout({ children, title }: AdminLayoutProps) {
   const { user } = useAuth();
+  const pathname = usePathname();
   const router = useRouter();
   
   if (!user || user.role !== 'admin') {
@@ -42,7 +44,6 @@ export function AdminLayout({ children, title }: AdminLayoutProps) {
     { name: 'Products', href: '/admin/products', icon: Package },
     { name: 'Orders', href: '/admin/orders', icon: ShoppingCart },
     { name: 'Users', href: '/admin/users', icon: Users },
-    { name: 'Settings', href: '/admin/settings', icon: Settings },
   ];
 
   return (
@@ -59,10 +60,11 @@ export function AdminLayout({ children, title }: AdminLayoutProps) {
           <div className="px-3">
             {navigation.map((item) => {
               const Icon = item.icon;
+              const isActive = pathname === item.href;
               return (
                 <Link key={item.name} href={item.href}>
                   <Button
-                    variant="ghost"
+                    variant={isActive ? "default" : "ghost"}
                     className="w-full justify-start mb-1"
                   >
                     <Icon className="mr-3 h-4 w-4" />
@@ -71,6 +73,15 @@ export function AdminLayout({ children, title }: AdminLayoutProps) {
                 </Link>
               );
             })}
+            
+            <div className="mt-8 pt-4 border-t">
+              <Link href="/">
+                <Button variant="ghost" className="w-full justify-start mb-1">
+                  <Home className="mr-3 h-4 w-4" />
+                  Back to Store
+                </Button>
+              </Link>
+            </div>
           </div>
         </nav>
 
