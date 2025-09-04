@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/contexts/CartContext';
 import { Button } from '@/components/ui/button';
@@ -19,12 +20,13 @@ import { ShoppingCart, Search, User, Crown, LogOut, Heart } from 'lucide-react';
 export function Header() {
   const { user, logout } = useAuth();
   const { itemCount } = useCart();
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      window.location.href = `/products?search=${encodeURIComponent(searchQuery)}`;
+      router.push(`/products?search=${encodeURIComponent(searchQuery)}`);
     }
   };
 
@@ -97,7 +99,7 @@ export function Header() {
                     <>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem asChild>
-                        <Link href="/admin" className="flex items-center">
+                        <Link href="/admin" className="flex items-center cursor-pointer">
                           <Crown className="mr-2 h-4 w-4" />
                           Admin Panel
                         </Link>
@@ -105,7 +107,7 @@ export function Header() {
                     </>
                   )}
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={logout} className="flex items-center">
+                  <DropdownMenuItem onClick={logout} className="flex items-center cursor-pointer">
                     <LogOut className="mr-2 h-4 w-4" />
                     Logout
                   </DropdownMenuItem>

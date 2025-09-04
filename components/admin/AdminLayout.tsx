@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,7 +15,8 @@ interface AdminLayoutProps {
 
 export function AdminLayout({ children, title }: AdminLayoutProps) {
   const { user } = useAuth();
-  console.log('AdminLayout user:', user);
+  const router = useRouter();
+  
   if (!user || user.role !== 'admin') {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -26,9 +28,9 @@ export function AdminLayout({ children, title }: AdminLayoutProps) {
             <p className="text-center text-muted-foreground mb-4">
               You need admin privileges to access this page.
             </p>
-            <Link href="/">
-              <Button className="w-full">Return Home</Button>
-            </Link>
+            <Button onClick={() => router.push('/')} className="w-full">
+              Return Home
+            </Button>
           </CardContent>
         </Card>
       </div>

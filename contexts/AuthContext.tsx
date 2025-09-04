@@ -12,7 +12,7 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
-  login: (email: string, password: string) => Promise<{ success: boolean; message: string }>;
+  login: (email: string, password: string) => Promise<{ success: boolean; message: string; user?: User }>;
   register: (name: string, email: string, password: string) => Promise<{ success: boolean; message: string }>;
   logout: () => void;
   isLoading: boolean;
@@ -66,7 +66,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (response.ok) {
         Cookies.set('auth-token', data.token, { expires: 7 });
         setUser(data.user);
-        return { success: true, message: 'Login successful' };
+        return { success: true, message: 'Login successful', user: data.user };
       } else {
         return { success: false, message: data.message || 'Login failed' };
       }
@@ -100,7 +100,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logout = () => {
-    fetch('/api/auth/me', { method: 'POST' })
+    fetch('/api/auth/logout', { method: 'POST' })
       .then(() => {
         Cookies.remove('auth-token');
         setUser(null);

@@ -36,7 +36,12 @@ export default function LoginPage() {
 
     if (result.success) {
       toast.success(result.message);
-      router.push('/');
+      // Redirect based on user role
+      if (result.user?.role === 'admin') {
+        router.push('/admin');
+      } else {
+        router.push('/');
+      }
     } else {
       toast.error(result.message);
     }
