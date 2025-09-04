@@ -1,9 +1,9 @@
-import jwt from 'jsonwebtoken';
+import { jwtVerify , SignJWT  } from 'jose';
 import { cookies } from 'next/headers';
 import User from '@/models/User';
 import connectDB from '@/lib/mongodb';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+const JWT_SECRET = process.env.JWT_SECRET || "your-super-secret-jwt-key-change-this-in-production";
 
 export interface AuthUser {
   id: string;
@@ -12,12 +12,20 @@ export interface AuthUser {
   role: 'admin' | 'customer';
 }
 
+const secret = new TextEncoder().encode(JWT_SECRET);
+
 export async function verifyToken(token: string): Promise<AuthUser | null> {
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as { userId: string };
+    const { payload } = await jwtVerify(token, secret);
+    const userId = payload.userId as string;
+
     await connectDB();
-    
-    const user = await User.findById(decoded.userId).select('-password');
+    const user = await User.findById(userId).select('-password') as {
+      _id: { toString(): string },
+      email: string,
+      name: string,
+      role: 'admin' | 'customer'
+    } | null;
     if (!user) return null;
 
     return {
@@ -27,13 +35,18 @@ export async function verifyToken(token: string): Promise<AuthUser | null> {
       role: user.role,
     };
   } catch (error) {
+    console.error("JWT verification failed:", error);
+    console.error("Token that caused error:", token);
     return null;
   }
 }
 
+
 export async function getCurrentUser(): Promise<AuthUser | null> {
   try {
     const cookieStore = cookies();
+    console.log("Cookie Store:", cookieStore);
+
     const token = cookieStore.get('auth-token')?.value;
     
     if (!token) return null;
@@ -46,6 +59,14 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
   }
 }
 
-export function generateToken(userId: string): string {
-  return jwt.sign({ userId }, JWT_SECRET, { expiresIn: '7d' });
+export async function generateToken(userId: string): Promise<string> {
+  const secret = new TextEncoder().encode(JWT_SECRET);
+
+  const token = await new SignJWT({ userId })
+    .setProtectedHeader({ alg: 'HS256' })
+    .setIssuedAt()
+    .setExpirationTime('7d') // expires in 7 days
+    .sign(secret);
+
+  return token;
 }

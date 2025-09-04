@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/nayab-gemstone';
 
 if (!MONGODB_URI) {
@@ -7,8 +6,8 @@ if (!MONGODB_URI) {
 }
 
 interface MongooseCache {
-  conn: typeof mongoose | null;
-  promise: Promise<typeof mongoose> | null;
+  conn: typeof import('mongoose') | null;
+  promise: Promise<typeof import('mongoose')> | null;
 }
 
 declare global {

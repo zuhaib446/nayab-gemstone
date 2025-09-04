@@ -4,7 +4,7 @@ import { verifyToken } from '@/lib/auth';
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-
+  console.log(`Request made to: ${pathname}`);
   // Protected admin routes
   if (pathname.startsWith('/admin')) {
     const token = request.cookies.get('auth-token')?.value;
@@ -15,6 +15,7 @@ export async function middleware(request: NextRequest) {
 
     try {
       const user = await verifyToken(token);
+      console.log(`Authenticated user: ${user}`);
       if (!user || user.role !== 'admin') {
         return NextResponse.redirect(new URL('/', request.url));
       }

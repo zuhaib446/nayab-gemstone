@@ -1,3 +1,5 @@
+
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import User from '@/models/User';
@@ -16,7 +18,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }) as {
+      _id: { toString: () => string },
+      name: string,
+      email: string,
+      role: string,
+      comparePassword: (password: string) => Promise<boolean>
+    } | null;
     if (!user) {
       return NextResponse.json(
         { message: 'Invalid credentials' },
@@ -32,7 +40,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const token = generateToken(user._id.toString());
+    const token = await generateToken(user._id.toString());
 
     const response = NextResponse.json({
       message: 'Login successful',
