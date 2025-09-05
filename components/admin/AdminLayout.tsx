@@ -1,13 +1,12 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Crown, Package, ShoppingCart, Users, BarChart3, Settings, LogOut, Home } from 'lucide-react';
+import { Crown, Package, ShoppingCart, Users, BarChart3, LogOut, Home, Loader2 } from 'lucide-react';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -15,11 +14,30 @@ interface AdminLayoutProps {
 }
 
 export function AdminLayout({ children, title }: AdminLayoutProps) {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
-  
-  if (!user || user.role !== 'admin') {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (user === null) {
+      router.push('/login');
+    } else if (user && user.role !== 'admin') {
+      router.push('/');
+    } else if (user && user.role === 'admin') {
+      setIsLoading(false);
+    }
+  }, [user, router]);
+
+  if (isLoading || !user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
+  if (user.role !== 'admin') {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Card className="w-full max-w-md">
@@ -81,6 +99,15 @@ export function AdminLayout({ children, title }: AdminLayoutProps) {
                   Back to Store
                 </Button>
               </Link>
+              
+              <Button 
+                variant="ghost" 
+                className="w-full justify-start mb-1 text-red-600 hover:text-red-700 hover:bg-red-50"
+                onClick={logout}
+              >
+                <LogOut className="mr-3 h-4 w-4" />
+                Logout
+              </Button>
             </div>
           </div>
         </nav>

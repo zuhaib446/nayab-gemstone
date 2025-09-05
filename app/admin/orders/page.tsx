@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Package, ShoppingCart, Truck, CheckCircle, XCircle, Eye, Edit } from 'lucide-react';
+import { Package, ShoppingCart, Truck, CheckCircle, XCircle, Eye } from 'lucide-react';
 import { toast } from 'sonner';
 import Image from 'next/image';
 

@@ -1,4 +1,4 @@
-import { jwtVerify , SignJWT  } from 'jose';
+import { jwtVerify, SignJWT } from 'jose';
 import { cookies } from 'next/headers';
 import User from '@/models/User';
 import connectDB from '@/lib/mongodb';
@@ -20,12 +20,7 @@ export async function verifyToken(token: string): Promise<AuthUser | null> {
     const userId = payload.userId as string;
 
     await connectDB();
-    const user = await User.findById(userId).select('-password') as {
-      _id: { toString(): string },
-      email: string,
-      name: string,
-      role: 'admin' | 'customer'
-    } | null;
+    const user = await User.findById(userId).select('-password');
     if (!user) return null;
 
     return {
@@ -36,16 +31,13 @@ export async function verifyToken(token: string): Promise<AuthUser | null> {
     };
   } catch (error) {
     console.error("JWT verification failed:", error);
-    console.error("Token that caused error:", token);
     return null;
   }
 }
 
-
 export async function getCurrentUser(): Promise<AuthUser | null> {
   try {
     const cookieStore = cookies();
-
     const token = cookieStore.get('auth-token')?.value;
     
     if (!token) return null;
@@ -59,12 +51,10 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
 }
 
 export async function generateToken(userId: string): Promise<string> {
-  const secret = new TextEncoder().encode(JWT_SECRET);
-
   const token = await new SignJWT({ userId })
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
-    .setExpirationTime('7d') // expires in 7 days
+    .setExpirationTime('7d')
     .sign(secret);
 
   return token;
