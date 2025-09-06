@@ -1,7 +1,26 @@
 import React from 'react';
+import { Metadata } from 'next';
 import { Header } from '@/components/Header';
 import { Hero } from '@/components/Hero';
 import { ProductGrid } from '@/components/ProductGrid';
+
+export const metadata: Metadata = {
+  title: 'Premium Certified Gemstones & Jewelry Collection',
+  description: 'Explore Nayab Gemstone\'s exquisite collection of certified diamonds, rubies, sapphires, and emeralds. Premium quality gemstones from renowned global sources with expert certification.',
+  keywords: 'certified gemstones, premium diamonds, authentic rubies, natural sapphires, genuine emeralds, gemstone jewelry, precious stones collection',
+  openGraph: {
+    title: 'Nayab Gemstone - Premium Certified Gemstones Collection',
+    description: 'Discover the world\'s finest certified gemstones with expert authentication and worldwide shipping.',
+    images: [
+      {
+        url: 'https://images.pexels.com/photos/1616403/pexels-photo-1616403.jpeg',
+        width: 1200,
+        height: 630,
+        alt: 'Premium Gemstone Collection',
+      },
+    ],
+  },
+};
 
 export default function HomePage() {
   return (

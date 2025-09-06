@@ -28,6 +28,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     checkAuth();
   }, []);
 
+  // Add storage event listener for cross-tab auth sync
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'auth-logout') {
+        setUser(null);
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+
   const checkAuth = async () => {
     try {
       const token = Cookies.get('auth-token');
@@ -36,16 +48,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      const response = await fetch('/api/auth/me');
+      const response = await fetch('/api/auth/me', {
+        credentials: 'include',
+        headers: {
+          'Cache-Control': 'no-cache',
+        },
+      });
       if (response.ok) {
         const userData = await response.json();
         setUser(userData);
       } else {
         Cookies.remove('auth-token');
+        localStorage.setItem('auth-logout', Date.now().toString());
       }
     } catch (error) {
       console.error('Auth check failed:', error);
       Cookies.remove('auth-token');
+      localStorage.setItem('auth-logout', Date.now().toString());
     } finally {
       setIsLoading(false);
     }
@@ -100,14 +119,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logout = () => {
-    fetch('/api/auth/logout', { method: 'POST' })
+    fetch('/api/auth/logout', { 
+      method: 'POST',
+      credentials: 'include'
+    })
       .then(() => {
         Cookies.remove('auth-token');
+        localStorage.setItem('auth-logout', Date.now().toString());
         setUser(null);
       })
       .catch(() => {
         // Fallback: remove cookie client-side
         Cookies.remove('auth-token');
+        localStorage.setItem('auth-logout', Date.now().toString());
         setUser(null);
       });
   };

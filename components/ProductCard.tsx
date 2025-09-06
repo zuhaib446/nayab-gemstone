@@ -92,7 +92,7 @@ export function ProductCard({ product }: ProductCardProps) {
               </div>
             </div>
             
-            <Link href={`/products/${product._id}`}>
+            <Link href={`/products/${product.slug || product._id}`}>
               <h3 className="font-semibold text-lg mb-2 hover:text-blue-600 transition-colors line-clamp-2">
                 {product.name}
               </h3>
@@ -118,7 +118,7 @@ export function ProductCard({ product }: ProductCardProps) {
         
         <CardFooter className="p-4 pt-0">
           <div className="flex w-full space-x-2">
-            <Link href={`/products/${product._id}`} className="flex-1">
+            <Link href={`/products/${product.slug || product._id}`} className="flex-1">
               <Button variant="outline" className="w-full">
                 View Details
               </Button>

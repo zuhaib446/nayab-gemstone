@@ -2,6 +2,7 @@ import mongoose, { Document, Schema } from 'mongoose';
 
 export interface IProduct extends Document {
   name: string;
+  slug: string;
   description: string;
   price: number;
   images: string[];
@@ -26,6 +27,12 @@ const ProductSchema = new Schema<IProduct>({
     type: String,
     required: [true, 'Product name is required'],
     trim: true,
+  },
+  slug: {
+    type: String,
+    required: true,
+    unique: true,
+    lowercase: true,
   },
   description: {
     type: String,
@@ -97,9 +104,21 @@ const ProductSchema = new Schema<IProduct>({
   timestamps: true,
 });
 
+// Generate slug from name before saving
+ProductSchema.pre('save', function (next) {
+  if (!this.slug || this.isModified('name')) {
+    this.slug = this.name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
+  }
+  next();
+});
+
 ProductSchema.index({ name: 'text', description: 'text' });
 ProductSchema.index({ category: 1, price: 1 });
 ProductSchema.index({ featured: 1 });
+ProductSchema.index({ slug: 1 }, { unique: true });
 
 // Delete the model if it exists to avoid OverwriteModelError
 if (mongoose.models.Product) {
